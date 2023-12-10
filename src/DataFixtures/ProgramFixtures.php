@@ -3,13 +3,18 @@
 namespace App\DataFixtures;
 
 use App\Entity\Program;
-use App\DataFixtures\SeasonFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Faker\Factory;
 
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
+    public function __construct(private SluggerInterface $slugger)
+    {
+     
+    }
     const PROGRAMS = [
         ['Title' => 'Robin des Bois - Prince des voleurs', 'Synopsis' => 'En 1193, le Roi d\'Angleterre, Richard Coeur de Lion, est retenu captif par les Autrichiens.', 'Poster' => 'build/images/R.jpeg', 'Country' => 'USA', 'Year' => '1991', 'Category' => 'category_Aventure'],
         ['Title' => '2012', 'Synopsis' => 'Un cataclysme mondial prédit par les mayas menace l\'humanité entière. Jackson Curtis, doit sauver sa famille et trouver un havre de sécurité.', 'Poster' => 'build/images/R.jpeg', 'Country' => 'USA', 'Year' => '2009', 'Category' => 'category_Action'],
@@ -25,7 +30,11 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
     {
         foreach (self::PROGRAMS as $programLine) {
             $program = new Program();
-            $program->setTitle($programLine['Title']);
+
+            $title = $programLine['Title'];
+            $program->setTitle($title);
+            $slug = $this->slugger->slug($title);
+            $program->setSlug($slug);
             $program->setSynopsis($programLine['Synopsis']);
             if (array_key_exists('Poster', $programLine)) {
                 $program->setPoster($programLine['Poster']);
