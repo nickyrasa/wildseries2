@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProgramRepository;
 use App\Repository\SeasonRepository;
@@ -19,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Mime\Email;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -35,7 +37,7 @@ class ProgramController extends AbstractController
     }
 
     #[ROUTE('/new', name: 'new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, SluggerInterface $slugger, ProgramRepository $program): Response
     {
         $program = new Program();
         $form = $this->createForm(ProgramType::class, $program);
@@ -47,6 +49,15 @@ class ProgramController extends AbstractController
             $program->setSlug($slug);
 
             $entityManager->persist($program);
+
+            $email = (new Email())
+                ->from($this->getParameter('mailer_from'))
+                ->to('your_email@example.com')
+                ->subject('Une nouvelle série vient d\'être publiée !')
+                ->html($this->renderView('Program/newProgramEmail.html.twig', ['program' => $program]));
+
+            $mailer->send($email);
+
             $entityManager->flush();
 
             $this->addFlash('success', 'The new program has been created');
@@ -92,7 +103,8 @@ class ProgramController extends AbstractController
     public function showEpisode(
         #[MapEntity(mapping: ['slug' => 'slug'])] Program $program,
         #[MapEntity(mapping: ['seasonId' => 'id'])] Season $season,
-        #[MapEntity(mapping: ['episodeId' => 'id'])] Episode $episode,ProgramDuration $programDuration
+        #[MapEntity(mapping: ['episodeId' => 'id'])] Episode $episode,
+        ProgramDuration $programDuration
 
     ) {
         $programDuration = $programDuration->calculate($program);
