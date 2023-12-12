@@ -9,6 +9,6 @@ vich_uploader:
         #        upload_destination: '%kernel.project_dir%/public/images/products'
         #        namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
         poster_file:
-            uri_prefix: /uploads/images/posters
+            uri_prefix: /upload/images/posters
             upload_destination: "%upload_directory%"
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
