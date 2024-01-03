@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wild Series - My profile
+{% endblock %}
+
+{% block body %}
+	<h1 class="text-center">My profil</h1>
+	<div class="container text-center mt-5">
+		<div class="card mx-auto w-50 m-4" style="width: 18rem;">
+			<div class="card-header">
+				Informations
+			</div>
+			<div class="card-body">
+				<h5 class="card-title">my email</h5>
+				<p class="card-text">{{ user.email }}</p>
+			</div>
+			<div class="card-body">
+				<h5 class="card-title">my id</h5>
+				<p class="card-text">{{ user.id }}</p>
+			</div>
+		</div>
+		<div class="card mx-auto w-50 m-4" style="width: 18rem;">
+			<div class="card-header">
+				my programs
+			</div>
+			<div class="card-body">
+				{% for program in user.programs %}
+					<li>{{ program.title }}</li>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="card mx-auto w-50 m-4" style="width: 18rem;">
+			<div class="card-header">
+				my comments
+			</div>
+			<div class="card-body">
+				{% for comment in user.comments %}
+					<li>{{ comment.comment }}</li>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>{% endblock %}

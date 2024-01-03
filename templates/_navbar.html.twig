@@ -48,14 +48,21 @@
 					</li>
 
 					<li class="nav-item">
-
 						{% if app.user %}
-							{{ app.user.email }}
-							<a href="{{ path('app_logout') }}">
-								Se déconnecter</a>
+							<div>{{ app.user.email }}
+								<a href="{{ path('app_logout') }}">
+									Se déconnecter</a>
+							</div>
+							<div>
+								<a href="{{ path('app_profile') }}">Mon profil</a>
+							</div>
 						{% else %}
-							<a href="{{ path('app_gitalogin') }}">
+							<div>
+								<a href="{{ path('app_login') }}"></div>
 								Se connecter</a>
+							<div>
+								<a href="{{ path('app_register') }}">Créer un compte</a>
+							</div>
 						{% endif %}
 					</li>
 

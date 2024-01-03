@@ -46,7 +46,7 @@ class Program
     private ?string $synopsis = null;
 
  #[ORM\Column(length: 255, nullable: true)]
-    private ?string $poster = null;
+             private ?string $poster = null;
     
 
     #[Vich\UploadableField(mapping: 'poster_file', fileNameProperty: 'poster')]
@@ -77,6 +77,9 @@ class Program
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'programs')]
+    private ?User $owner = null;
 
     public function __construct()
     {
@@ -253,6 +256,18 @@ class Program
     public function setUpdatedAt(?DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

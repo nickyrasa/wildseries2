@@ -11,6 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+
+
 
 #[Route('/category', name: 'category_')]
 class CategoryController extends AbstractController
@@ -26,7 +30,9 @@ class CategoryController extends AbstractController
 
     //The controller for the category add form
     //Display the form or deal with it
+
     #[ROUTE('/new', name: 'new')]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $category = new Category();
@@ -58,7 +64,7 @@ class CategoryController extends AbstractController
         $programs = $programRepository->findBy(['category' => $category], ['id' => 'DESC'], limit: 3);
         if (!$category) {
             throw $this->createNotFoundException(
-                'Aucune catégorie avec ce nom'  
+                'Aucune catégorie avec ce nom'
             );
         }
         return $this->render('category/show.html.twig', [

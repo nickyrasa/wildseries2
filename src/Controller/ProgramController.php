@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Mime\Email;
 
+
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
 {
@@ -47,6 +48,7 @@ class ProgramController extends AbstractController
 
             $slug = $slugger->slug($program->getTitle());
             $program->setSlug($slug);
+            $program->setOwner($this->getUser());
 
             $entityManager->persist($program);
 
@@ -61,6 +63,7 @@ class ProgramController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'The new program has been created');
+
 
             return $this->redirectToRoute('program_index');
         }
@@ -118,6 +121,28 @@ class ProgramController extends AbstractController
         ]);
     }
 
+    #[Route('/{slug}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Program $program, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->getUser() !== $program->getOwner()) {
+            // if not the owner, throws a 403 Access Denied exeption
+            throw $this->createAccessDeniedException('Only the owner can edit the program!');
+        }
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'The new program has been updated');
+
+            return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('program/edit.html.twig', [
+            'program' => $program,
+            'form' => $form,
+        ]);
+    }
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Program $program, EntityManagerInterface $entityManager): Response
     {
