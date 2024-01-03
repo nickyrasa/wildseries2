@@ -46,8 +46,17 @@
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="/program">Program</a>
 					</li>
+
 					<li class="nav-item">
-						<a class="nav-link" href="#">Déconnexion</a>
+
+						{% if app.user %}
+							{{ app.user.email }}
+							<a href="{{ path('app_logout') }}">
+								Se déconnecter</a>
+						{% else %}
+							<a href="{{ path('app_gitalogin') }}">
+								Se connecter</a>
+						{% endif %}
 					</li>
 
 				</ul>
